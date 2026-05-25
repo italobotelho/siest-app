@@ -1,9 +1,3 @@
-# Ignorar pastas do Data Lake
-dados_sinan_parquet/
-dados_processados_cnes_sinan_parquet/
-dados_clima_parquet/
-dados_saneamento_parquet/
-
 # Ignorar arquivos de dados brutos e planilhas
 *.csv
 *.xlsx
