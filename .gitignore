@@ -3,6 +3,7 @@
 *.xlsx
 *.zip
 *.parquet
+*.env
 
 # Ignorar arquivos de mapas locais
 *.shp

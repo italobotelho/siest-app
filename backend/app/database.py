@@ -1,16 +1,17 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+from dotenv import load_dotenv
 
-# Em produção, usaremos um arquivo .env. Por agora, colocamos a URL que você usou nos ETLs.
-MONGO_URL = os.getenv(
-    "MONGO_URL", 
-    "mongodb+srv://isabelbaungartner_db_user:trabalhoPI@cluster0.a6z6ys0.mongodb.net/?appName=Cluster0"
-)
+# Carrega as variáveis escondidas do ficheiro .env
+load_dotenv()
 
-# Inicializa o cliente assíncrono do MongoDB
+# Puxa a variável sem expor a senha no ficheiro
+MONGO_URL = os.getenv("MONGO_URL")
+
+if not MONGO_URL:
+    raise ValueError("⚠️ ERRO: Variável MONGO_URL não encontrada. Crie o ficheiro .env!")
+
 client = AsyncIOMotorClient(MONGO_URL)
-
-# Seleciona o banco de dados do projeto
 db = client.siest_db
 
-print("🔌 Cliente MongoDB (Motor) inicializado.")
+print("🔌 Cliente MongoDB (Motor) inicializado com segurança.")
