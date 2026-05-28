@@ -11,11 +11,11 @@ import NetworkGraph from '../components/NetworkGraph';
 
 const DOENCAS = [
   { id: '', nome: 'Geral (Todas)', colorInfo: 'from-indigo-500 to-purple-500', activeClass: 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] border-indigo-500' },
-  { id: 'DENGUE', nome: 'Dengue', colorInfo: 'from-rose-500 to-red-500', activeClass: 'bg-rose-600 text-white shadow-[0_0_15px_rgba(225,29,72,0.5)] border-rose-500' },
+  { id: 'DENG', nome: 'Dengue', colorInfo: 'from-rose-500 to-red-500', activeClass: 'bg-rose-600 text-white shadow-[0_0_15px_rgba(225,29,72,0.5)] border-rose-500' },
   { id: 'ZIKA', nome: 'Zika', colorInfo: 'from-amber-400 to-orange-500', activeClass: 'bg-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.5)] border-amber-500' },
-  { id: 'CHIKUNGUNYA', nome: 'Chikungunya', colorInfo: 'from-fuchsia-400 to-pink-500', activeClass: 'bg-fuchsia-500 text-white shadow-[0_0_15px_rgba(217,70,239,0.5)] border-fuchsia-500' },
-  { id: 'LEPTOSPIROSE', nome: 'Leptospirose', colorInfo: 'from-teal-400 to-cyan-500', activeClass: 'bg-teal-500 text-white shadow-[0_0_15px_rgba(20,184,166,0.5)] border-teal-500' },
-  { id: 'HEPATITE_A', nome: 'Hepatite A', colorInfo: 'from-yellow-400 to-lime-500', activeClass: 'bg-yellow-500 text-white shadow-[0_0_15px_rgba(234,179,8,0.5)] border-yellow-500' }
+  { id: 'CHIK', nome: 'Chikungunya', colorInfo: 'from-fuchsia-400 to-pink-500', activeClass: 'bg-fuchsia-500 text-white shadow-[0_0_15px_rgba(217,70,239,0.5)] border-fuchsia-500' },
+  { id: 'LEPT', nome: 'Leptospirose', colorInfo: 'from-teal-400 to-cyan-500', activeClass: 'bg-teal-500 text-white shadow-[0_0_15px_rgba(20,184,166,0.5)] border-teal-500' },
+  { id: 'HEPA', nome: 'Hepatite A', colorInfo: 'from-yellow-400 to-lime-500', activeClass: 'bg-yellow-500 text-white shadow-[0_0_15px_rgba(234,179,8,0.5)] border-yellow-500' }
 ];
 
 const TABS = [

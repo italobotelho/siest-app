@@ -4,29 +4,61 @@ from app.database import db
 router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
 
 @router.get("/resumo")
-async def get_resumo_kpis(doenca: str = None): # <-- Agora aceita a doença!
+async def get_resumo_kpis(doenca: str = None):
     """Retorna os KPIs gerais ou específicos da doença."""
     
-    # 1. Filtro Case-Insensitive (resolve o problema de algumas doenças não funcionarem)
     filtro = {"doenca": {"$regex": f"^{doenca}$", "$options": "i"}} if doenca else {}
 
-    resumo_clima = await db.agg_resumo_clima.find_one({}, {"_id": 0})
+    resumo_clima = await db.agg_resumo_clima.find_one({}, {"_id": 0}) or {}
 
     if not doenca:
-        # Se NÃO há filtro, devolvemos o resumo global do banco
         resumo_casos = await db.agg_resumo_casos.find_one({}, {"_id": 0})
     else:
-        # Se HÁ filtro, calculamos o total na hora usando a agregação temporal!
         dados_temporais = await db.agg_casos_clima_por_mes.find(filtro, {"_id": 0}).to_list(length=None)
-        
         total_casos_doenca = sum(item.get("total_casos", 0) for item in dados_temporais)
         
-        # Construímos um resumo virtual para o Frontend não quebrar
+        # Hospitalizações e Unidades
+        dados_hospitais = await db.agg_casos_por_hospital.find(filtro, {"_id": 0}).to_list(length=None)
+        total_hospitalizados = sum(h.get("hospitalizacoes", 0) for h in dados_hospitais)
+        total_unidades = len([h for h in dados_hospitais if h.get("total_casos", 0) > 0])
+        
+        # Média de Idade (aproximada por faixa etária)
+        dados_idade = await db.agg_casos_por_faixa_etaria.find(filtro, {"_id": 0}).to_list(length=None)
+        soma_idade = 0
+        total_pessoas = 0
+        for item in dados_idade:
+            faixa = item.get("faixa_etaria", "")
+            casos = item.get("total_casos", 0)
+            peso = None
+            if "00 a 04" in faixa: peso = 2
+            elif "05 a 09" in faixa: peso = 7
+            elif "10 a 14" in faixa: peso = 12
+            elif "15 a 19" in faixa: peso = 17
+            elif "20 a 29" in faixa: peso = 25
+            elif "30 a 39" in faixa: peso = 35
+            elif "40 a 49" in faixa: peso = 45
+            elif "50 a 59" in faixa: peso = 55
+            elif "60 a 69" in faixa: peso = 65
+            elif "70 a 79" in faixa: peso = 75
+            elif "80" in faixa: peso = 85
+            if peso:
+                soma_idade += peso * casos
+                total_pessoas += casos
+                
+        media_idade = round(soma_idade / total_pessoas, 1) if total_pessoas > 0 else "N/A"
+        
+        # Temperatura Média ponderada pelos meses de incidência
+        soma_temp = sum(item.get("temperatura_media", 0) * item.get("total_casos", 0) for item in dados_temporais)
+        if total_casos_doenca > 0 and any("temperatura_media" in i for i in dados_temporais):
+            media_temp = round(soma_temp / total_casos_doenca, 1)
+            resumo_clima = dict(resumo_clima)
+            resumo_clima["media_temperatura"] = media_temp
+
         resumo_casos = {
             "total_casos": total_casos_doenca,
-            "media_idade": "Var.", # Não temos a média exata por doença pré-calculada
-            "total_hospitalizados": "N/A", # Depende da base completa
-            "total_unidades": "N/A"
+            "media_idade": media_idade,
+            "total_hospitalizados": total_hospitalizados,
+            "total_unidades": total_unidades
         }
 
     return {
