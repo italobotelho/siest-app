@@ -67,9 +67,13 @@ async def get_resumo_kpis(doenca: str = None):
     }
 
 @router.get("/temporal")
-async def get_dados_temporais(doenca: str = None):
+async def get_dados_temporais(doenca: str = None, granularidade: str = "mes"):
     filtro = {"doenca": {"$regex": f"^{doenca}$", "$options": "i"}} if doenca else {}
-    return await db.agg_casos_clima_por_mes.find(filtro, {"_id": 0}).to_list(length=None)
+    
+    if granularidade == "semana":
+        return await db.agg_casos_clima_por_semana.find(filtro, {"_id": 0}).to_list(length=None)
+    else:
+        return await db.agg_casos_clima_por_mes.find(filtro, {"_id": 0}).to_list(length=None)
 
 @router.get("/demografia")
 async def get_dados_demograficos(doenca: str = None):

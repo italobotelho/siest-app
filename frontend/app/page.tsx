@@ -7,7 +7,6 @@ import DashboardMap from '../components/DashboardMap';
 import TimeLagChart from '../components/TimeLagChart';
 import CorrelationScatter from '../components/CorrelationScatter';
 import DemographicSunburst from '../components/DemographicSunburst';
-import NetworkGraph from '../components/NetworkGraph';
 
 const DOENCAS = [
   { id: '', nome: 'Geral (Todas)', colorInfo: 'from-indigo-500 to-purple-500', activeClass: 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] border-indigo-500' },
@@ -21,8 +20,7 @@ const DOENCAS = [
 const TABS = [
   { id: 'geral', label: 'Visão Geral' },
   { id: 'clima', label: 'Clima & Correlação' },
-  { id: 'geo', label: 'Geo & Demografia' },
-  { id: 'mobilidade', label: 'Mobilidade Saúde' }
+  { id: 'geo', label: 'Geo & Demografia' }
 ];
 
 export default function Home() {
@@ -104,10 +102,6 @@ export default function Home() {
             <DashboardMap doenca={doencaSelecionada} />
             <DemographicSunburst doenca={doencaSelecionada} />
           </>
-        )}
-
-        {activeTab === 'mobilidade' && (
-          <NetworkGraph doenca={doencaSelecionada} />
         )}
       </div>
 
