@@ -6,7 +6,15 @@ import {
   ComposedChart, Line, Bar, Brush, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 
-export default function TimeLagChart({ doenca }: { doenca: string }) {
+export default function TimeLagChart({ 
+  doenca, 
+  filtroAno = null, 
+  filtroSexo = null 
+}: { 
+  doenca: string;
+  filtroAno?: number | null;
+  filtroSexo?: string | null;
+}) {
   const [dados, setDados] = useState<any[]>([]);
   const [lagSemanas, setLagSemanas] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -16,7 +24,7 @@ export default function TimeLagChart({ doenca }: { doenca: string }) {
 
   useEffect(() => {
     setLoading(true);
-    api.get('/dashboard/temporal', { params: { doenca, granularidade: 'semana' } })
+    api.get('/dashboard/temporal', { params: { doenca, granularidade: 'semana', ano: filtroAno, sexo: filtroSexo } })
       .then(res => {
         // Formatar e adicionar dados climáticos mockados se a API ainda não os trouxer
         const formatado = res.data
@@ -40,7 +48,7 @@ export default function TimeLagChart({ doenca }: { doenca: string }) {
         console.error("Erro ao buscar dados temporais:", error);
         setLoading(false);
       });
-  }, [doenca]);
+  }, [doenca, filtroAno, filtroSexo]);
 
   // Função para calcular o lag sob demanda para o gráfico (evita recriar o array de dados)
   // Isso garante que o Brush NUNCA resete, pois a prop data={dados} nunca muda a referência de memória!

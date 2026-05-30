@@ -60,51 +60,49 @@ export default function Home() {
             </div>
 
             {/* Filters */}
-            {activeTab === 'geral' && (
-              <div className="flex flex-wrap items-center gap-4 bg-slate-800/60 p-3 rounded-2xl border border-slate-700/50 shadow-inner">
-                <div className="flex items-center gap-3">
-                  <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Ano</span>
-                  <select 
-                    className="bg-slate-900 text-white border border-slate-600 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer shadow-lg transition-all hover:bg-slate-800"
-                    value={filtroAno || ''}
-                    onChange={(e) => setFiltroAno(e.target.value ? Number(e.target.value) : null)}
-                  >
-                    <option value="">Todos</option>
-                    {anosDisponiveis.map(ano => (
-                      <option key={ano} value={ano}>{ano}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div className="hidden sm:block w-px h-8 bg-slate-600/50"></div>
-                
-                <div className="flex items-center gap-3">
-                  <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Sexo</span>
-                  <select 
-                    className="bg-slate-900 text-white border border-slate-600 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer shadow-lg transition-all hover:bg-slate-800"
-                    value={filtroSexo || ''}
-                    onChange={(e) => setFiltroSexo(e.target.value || null)}
-                  >
-                    <option value="">Todos</option>
-                    <option value="M">Masculino</option>
-                    <option value="F">Feminino</option>
-                    <option value="I">Indeterm</option>
-                  </select>
-                </div>
-
-                {(filtroAno || filtroSexo) && (
-                  <>
-                    <div className="hidden sm:block w-px h-8 bg-slate-600/50"></div>
-                    <button 
-                      onClick={() => { setFiltroAno(null); setFiltroSexo(null); }}
-                      className="flex items-center gap-1.5 text-rose-400 hover:text-rose-300 transition-colors text-xs font-bold uppercase tracking-wider px-2"
-                    >
-                      ✕ Limpar
-                    </button>
-                  </>
-                )}
+            <div className="flex flex-wrap items-center gap-4 bg-slate-800/60 p-3 rounded-2xl border border-slate-700/50 shadow-inner">
+              <div className="flex items-center gap-3">
+                <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Ano</span>
+                <select 
+                  className="bg-slate-900 text-white border border-slate-600 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer shadow-lg transition-all hover:bg-slate-800"
+                  value={filtroAno || ''}
+                  onChange={(e) => setFiltroAno(e.target.value ? Number(e.target.value) : null)}
+                >
+                  <option value="">Todos</option>
+                  {anosDisponiveis.map(ano => (
+                    <option key={ano} value={ano}>{ano}</option>
+                  ))}
+                </select>
               </div>
-            )}
+              
+              <div className="hidden sm:block w-px h-8 bg-slate-600/50"></div>
+              
+              <div className="flex items-center gap-3">
+                <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Sexo</span>
+                <select 
+                  className="bg-slate-900 text-white border border-slate-600 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer shadow-lg transition-all hover:bg-slate-800"
+                  value={filtroSexo || ''}
+                  onChange={(e) => setFiltroSexo(e.target.value || null)}
+                >
+                  <option value="">Todos</option>
+                  <option value="M">Masculino</option>
+                  <option value="F">Feminino</option>
+                  <option value="I">Indeterm</option>
+                </select>
+              </div>
+
+              {(filtroAno || filtroSexo) && (
+                <>
+                  <div className="hidden sm:block w-px h-8 bg-slate-600/50"></div>
+                  <button 
+                    onClick={() => { setFiltroAno(null); setFiltroSexo(null); }}
+                    className="flex items-center gap-1.5 text-rose-400 hover:text-rose-300 transition-colors text-xs font-bold uppercase tracking-wider px-2"
+                  >
+                    ✕ Limpar
+                  </button>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Bottom Row: Tabs */}
@@ -165,15 +163,15 @@ export default function Home() {
         
         {activeTab === 'clima' && (
           <>
-            <TimeLagChart doenca={doencaSelecionada} />
-            <CorrelationScatter doenca={doencaSelecionada} />
+            <TimeLagChart doenca={doencaSelecionada} filtroAno={filtroAno} filtroSexo={filtroSexo} />
+            <CorrelationScatter doenca={doencaSelecionada} filtroAno={filtroAno} filtroSexo={filtroSexo} />
           </>
         )}
 
         {activeTab === 'geo' && (
           <>
-            <DashboardMap doenca={doencaSelecionada} />
-            <DemographicSunburst doenca={doencaSelecionada} />
+            <DashboardMap doenca={doencaSelecionada} filtroAno={filtroAno} filtroSexo={filtroSexo} />
+            <DemographicSunburst doenca={doencaSelecionada} filtroAno={filtroAno} filtroSexo={filtroSexo} />
           </>
         )}
       </div>

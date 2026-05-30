@@ -6,13 +6,21 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ZAxis, ResponsiveContainer, Cell, ReferenceArea, Label, ReferenceLine
 } from 'recharts';
 
-export default function CorrelationScatter({ doenca }: { doenca: string }) {
+export default function CorrelationScatter({ 
+  doenca,
+  filtroAno = null,
+  filtroSexo = null
+}: { 
+  doenca: string;
+  filtroAno?: number | null;
+  filtroSexo?: string | null;
+}) {
   const [dados, setDados] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    api.get('/dashboard/temporal', { params: { doenca } })
+    api.get('/dashboard/temporal', { params: { doenca, ano: filtroAno, sexo: filtroSexo } })
       .then(res => {
         const dadosReais = res.data.map((item: any) => ({
           mes_id: `${String(item.mes).padStart(2, '0')}/${item.ano}`,
@@ -30,7 +38,7 @@ export default function CorrelationScatter({ doenca }: { doenca: string }) {
         console.error("Erro ao buscar dados para scatter:", error);
         setLoading(false);
       });
-  }, [doenca]);
+  }, [doenca, filtroAno, filtroSexo]);
 
   const getEstacao = (mes: number) => {
     if (mes >= 12 || mes <= 2) return 0; // Verão

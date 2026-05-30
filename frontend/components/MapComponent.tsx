@@ -8,7 +8,15 @@ import HeatmapLayer from './HeatmapLayer';
 // Coordenadas centrais de Campinas
 const CENTRO_CAMPINAS: [number, number] = [-22.9056, -47.0608];
 
-export default function MapComponent({ doenca }: { doenca?: string }) {
+export default function MapComponent({ 
+  doenca,
+  filtroAno = null,
+  filtroSexo = null
+}: { 
+  doenca?: string;
+  filtroAno?: number | null;
+  filtroSexo?: string | null;
+}) {
   const [riscoData, setRiscoData] = useState<any>(null);
   const [vulnData, setVulnData] = useState<any>(null);
   const [casosData, setCasosData] = useState<[number, number, number][]>([]);
@@ -22,7 +30,7 @@ export default function MapComponent({ doenca }: { doenca?: string }) {
 
   useEffect(() => {
     // Busca dados dos hospitais quando a doença muda
-    api.get('/dashboard/mapas/casos', { params: { doenca } })
+    api.get('/dashboard/mapas/casos', { params: { doenca, ano: filtroAno, sexo: filtroSexo } })
       .then(res => {
         const dados = res.data;
         setHospitaisData(dados);
@@ -41,7 +49,7 @@ export default function MapComponent({ doenca }: { doenca?: string }) {
         }
       })
       .catch(err => console.error("Erro ao buscar dados dos hospitais:", err));
-  }, [doenca]);
+  }, [doenca, filtroAno, filtroSexo]);
 
   // Estilos das nossas camadas geográficas
   // Risco de inundação (Água) -> Azul/Ciano
