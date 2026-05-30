@@ -17,13 +17,17 @@ interface ResumoData {
   };
 }
 
-export default function DashboardMetrics({ doenca }: { doenca: string }) {
+export default function DashboardMetrics({ doenca, filtroAno, filtroSexo }: { doenca: string, filtroAno?: number | null, filtroSexo?: string | null }) {
   const [dados, setDados] = useState<ResumoData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
-    api.get('/dashboard/resumo', { params: { doenca } })
+    const params: any = { doenca };
+    if (filtroAno) params.ano = filtroAno;
+    if (filtroSexo) params.sexo = filtroSexo;
+    
+    api.get('/dashboard/resumo', { params })
       .then(response => {
         setDados(response.data);
         setLoading(false);
@@ -32,7 +36,7 @@ export default function DashboardMetrics({ doenca }: { doenca: string }) {
         console.error("Erro ao buscar resumo:", error);
         setLoading(false);
       });
-  }, [doenca]);
+  }, [doenca, filtroAno, filtroSexo]);
 
   if (loading) return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">

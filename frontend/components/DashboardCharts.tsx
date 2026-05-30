@@ -12,7 +12,17 @@ const CORES_SEXO = ['#06b6d4', '#e11d48', '#8b5cf6']; // Cyan, Rose, Violet
 const COR_BARRAS = '#f59e0b'; // Amber
 const COR_LINHA = '#e11d48'; // Rose for alerts
 
-export default function DashboardCharts({ doenca }: { doenca: string }) {
+export default function DashboardCharts({ 
+  doenca, 
+  filtroAno, 
+  filtroSexo, 
+  setFiltroSexo 
+}: { 
+  doenca: string,
+  filtroAno: number | null,
+  filtroSexo: string | null,
+  setFiltroSexo: (sex: string | null) => void
+}) {
   const [dadosTemporais, setDadosTemporais] = useState<any[]>([]);
   const [dadosDemograficos, setDadosDemograficos] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -20,74 +30,43 @@ export default function DashboardCharts({ doenca }: { doenca: string }) {
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([
-      api.get('/dashboard/temporal', { params: { doenca } }),
-      api.get('/dashboard/demografia', { params: { doenca } })
-    ]).then(([resTemporal, resDemografia]) => {
-      
-      const temporalFormatado = resTemporal.data
-        .sort((a: any, b: any) => {
-          if (a.ano !== b.ano) return a.ano - b.ano;
-          return a.mes - b.mes;
-        })
-        .map((item: any) => ({
+    const params: any = { doenca };
+    if (filtroAno) params.ano = filtroAno;
+    if (filtroSexo) params.sexo = filtroSexo;
+
+    api.get('/dashboard/dinamico', { params })
+      .then(res => {
+        const data = res.data;
+        
+        const temporalFormatado = (data.tempo || [])
+          .map((item: any) => ({
+            ...item,
+            data_formatada: `${String(item.mes).padStart(2, '0')}/${item.ano}`,
+          }));
+
+        const SEXO_MAP: Record<string, string> = { 'M': 'Masculino', 'F': 'Feminino', 'I': 'Indeterminado' };
+        const SEXO_COLOR_MAP: Record<string, string> = { 'M': '#06b6d4', 'F': '#8b5cf6', 'I': '#e11d48' };
+
+        const sexoFormatado = (data.sexo || []).map((item: any) => ({
           ...item,
-          data_formatada: `${String(item.mes).padStart(2, '0')}/${item.ano}`,
+          sexo_nome: SEXO_MAP[item.sexo] || item.sexo,
+          fill: SEXO_COLOR_MAP[item.sexo] || '#94a3b8'
         }));
 
-      // Helper para agrupar e somar dados (resolve o problema de dados duplicados vindo da API)
-      const aggregateData = (data: any[] = [], key: string) => {
-        const grouped = data.reduce((acc: any, curr: any) => {
-          const k = curr[key];
-          if (!k) return acc;
-          if (!acc[k]) {
-            acc[k] = { [key]: k, total_casos: 0 };
-          }
-          acc[k].total_casos += Number(curr.total_casos) || 0;
-          return acc;
-        }, {});
-        return Object.values(grouped);
-      };
-
-      const faixaEtariaAgregada = aggregateData(resDemografia.data?.faixa_etaria, 'faixa_etaria')
-        .sort((a: any, b: any) => a.faixa_etaria.localeCompare(b.faixa_etaria)); // Ordenar alfabeticamente ('00 a 04' -> '80+')
-
-      const idadeExataAgregada = aggregateData(resDemografia.data?.idade_exata, 'idade')
-        .sort((a: any, b: any) => Number(a.idade) - Number(b.idade));
-
-      const sexoAgregado = aggregateData(resDemografia.data?.sexo, 'sexo');
-      
-      const SEXO_MAP: Record<string, string> = {
-        'M': 'Masculino',
-        'F': 'Feminino',
-        'I': 'Indeterminado'
-      };
-
-      const SEXO_COLOR_MAP: Record<string, string> = {
-        'M': '#06b6d4', // Cyan
-        'F': '#8b5cf6', // Violet
-        'I': '#e11d48'  // Rose
-      };
-
-      const sexoFormatado = sexoAgregado.map((item: any) => ({
-        ...item,
-        sexo_nome: SEXO_MAP[item.sexo] || item.sexo,
-        fill: SEXO_COLOR_MAP[item.sexo] || '#94a3b8'
-      }));
-
-      setDadosTemporais(temporalFormatado);
-      setDadosDemograficos({
-        ...resDemografia.data,
-        faixa_etaria: faixaEtariaAgregada,
-        idade_exata: idadeExataAgregada,
-        sexo: sexoFormatado
+        setDadosTemporais(temporalFormatado);
+        setDadosDemograficos({
+          faixa_etaria: data.faixa_etaria || [],
+          idade_exata: data.idade_exata || [],
+          sexo: sexoFormatado,
+          letalidade: data.letalidade || []
+        });
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Erro ao carregar gráficos:", error);
+        setLoading(false);
       });
-      setLoading(false);
-    }).catch(error => {
-      console.error("Erro ao carregar gráficos:", error);
-      setLoading(false);
-    });
-  }, [doenca]);
+  }, [doenca, filtroAno, filtroSexo]);
 
   if (loading) return (
     <div className="w-full space-y-8 mt-8">
@@ -155,7 +134,9 @@ export default function DashboardCharts({ doenca }: { doenca: string }) {
     <div className="w-full space-y-8">
       <div className={cardClass}>
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-rose-500 to-transparent opacity-50"></div>
-        <h3 className="text-xl font-bold text-white mb-6 tracking-tight">Evolução Temporal de Casos</h3>
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-white tracking-tight">Evolução Temporal de Casos</h3>
+        </div>
         <div className="h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={dadosTemporais} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
@@ -250,9 +231,29 @@ export default function DashboardCharts({ doenca }: { doenca: string }) {
           <div className="h-[320px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={dadosDemograficos?.sexo} cx="50%" cy="50%" innerRadius={80} outerRadius={110} paddingAngle={8} dataKey="total_casos" nameKey="sexo_nome" label={({ percent }) => `${((percent || 0) * 100).toFixed(2)}%`} stroke="none">
+                <Pie 
+                  data={dadosDemograficos?.sexo} 
+                  cx="50%" 
+                  cy="50%" 
+                  innerRadius={80} 
+                  outerRadius={110} 
+                  paddingAngle={8} 
+                  dataKey="total_casos" 
+                  nameKey="sexo_nome" 
+                  label={({ percent }) => `${((percent || 0) * 100).toFixed(2)}%`} 
+                  stroke="none"
+                  onClick={(data, index) => setFiltroSexo(data.sexo)}
+                  className="cursor-pointer hover:opacity-80 transition-opacity"
+                >
                   {dadosDemograficos?.sexo?.map((entry: any, index: number) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} style={{ filter: `drop-shadow(0px 0px 8px ${entry.fill}60)` }} />
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.fill} 
+                      style={{ 
+                        filter: filtroSexo && filtroSexo !== entry.sexo ? 'grayscale(80%) opacity(40%)' : `drop-shadow(0px 0px 8px ${entry.fill}60)`,
+                        transition: 'all 0.3s ease'
+                      }} 
+                    />
                   ))}
                 </Pie>
                 <Tooltip contentStyle={tooltipStyle} />

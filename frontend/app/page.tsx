@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '@/app/services/api';
 import DashboardMetrics from '../components/DashboardMetrics';
 import DashboardCharts from '../components/DashboardCharts';
 import DashboardMap from '../components/DashboardMap';
@@ -26,6 +27,15 @@ const TABS = [
 export default function Home() {
   const [doencaSelecionada, setDoencaSelecionada] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('geral');
+  const [filtroAno, setFiltroAno] = useState<number | null>(null);
+  const [filtroSexo, setFiltroSexo] = useState<string | null>(null);
+  const [anosDisponiveis, setAnosDisponiveis] = useState<number[]>([]);
+
+  useEffect(() => {
+    api.get('/dashboard/anos')
+      .then(res => setAnosDisponiveis(res.data || []))
+      .catch(err => console.error("Erro ao buscar anos:", err));
+  }, []);
 
   const activeDoenca = DOENCAS.find(d => d.id === doencaSelecionada) || DOENCAS[0];
 
@@ -36,18 +46,70 @@ export default function Home() {
       <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-r ${activeDoenca.colorInfo} opacity-[0.15] blur-[120px] rounded-full pointer-events-none transition-all duration-1000 z-0`}></div>
 
       <div className="w-full max-w-7xl mb-8 relative z-10">
-        <div className="bg-slate-900/40 backdrop-blur-2xl border border-slate-700/50 rounded-3xl p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
-          <div className="mb-6 lg:mb-0">
-            <h1 className={`text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${activeDoenca.colorInfo} transition-all duration-500 tracking-tight`}>
-              SIEST
-            </h1>
-            <p className="text-sm md:text-base text-slate-300 mt-2 font-medium">
-              Sistema de Inteligência Epidemiológica e Socio-Territorial
-            </p>
+        <div className="bg-slate-900/40 backdrop-blur-2xl border border-slate-700/50 rounded-3xl p-6 md:p-8 flex flex-col gap-6 shadow-[0_8px_30px_rgb(0,0,0,0.4)]">
+          
+          {/* Top Row: Title and Filters */}
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+            <div>
+              <h1 className={`text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${activeDoenca.colorInfo} transition-all duration-500 tracking-tight`}>
+                SIEST
+              </h1>
+              <p className="text-sm md:text-base text-slate-300 mt-2 font-medium">
+                Sistema de Inteligência Epidemiológica e Socio-Territorial
+              </p>
+            </div>
+
+            {/* Filters */}
+            {activeTab === 'geral' && (
+              <div className="flex flex-wrap items-center gap-4 bg-slate-800/60 p-3 rounded-2xl border border-slate-700/50 shadow-inner">
+                <div className="flex items-center gap-3">
+                  <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Ano</span>
+                  <select 
+                    className="bg-slate-900 text-white border border-slate-600 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer shadow-lg transition-all hover:bg-slate-800"
+                    value={filtroAno || ''}
+                    onChange={(e) => setFiltroAno(e.target.value ? Number(e.target.value) : null)}
+                  >
+                    <option value="">Todos</option>
+                    {anosDisponiveis.map(ano => (
+                      <option key={ano} value={ano}>{ano}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="hidden sm:block w-px h-8 bg-slate-600/50"></div>
+                
+                <div className="flex items-center gap-3">
+                  <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Sexo</span>
+                  <select 
+                    className="bg-slate-900 text-white border border-slate-600 rounded-xl px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none cursor-pointer shadow-lg transition-all hover:bg-slate-800"
+                    value={filtroSexo || ''}
+                    onChange={(e) => setFiltroSexo(e.target.value || null)}
+                  >
+                    <option value="">Todos</option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Feminino</option>
+                    <option value="I">Indeterm</option>
+                  </select>
+                </div>
+
+                {(filtroAno || filtroSexo) && (
+                  <>
+                    <div className="hidden sm:block w-px h-8 bg-slate-600/50"></div>
+                    <button 
+                      onClick={() => { setFiltroAno(null); setFiltroSexo(null); }}
+                      className="flex items-center gap-1.5 text-rose-400 hover:text-rose-300 transition-colors text-xs font-bold uppercase tracking-wider px-2"
+                    >
+                      ✕ Limpar
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
-          <div className="flex flex-col space-y-4">
-            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
+          {/* Bottom Row: Tabs */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-t border-slate-700/50 pt-6">
+            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar w-full lg:w-auto">
               {DOENCAS.map((d) => (
                 <button
                   key={d.id}
@@ -57,7 +119,7 @@ export default function Home() {
                       setActiveTab('geral');
                     }
                   }}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 border whitespace-nowrap ${
+                  className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 border whitespace-nowrap shadow-sm ${
                     doencaSelecionada === d.id 
                       ? d.activeClass 
                       : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white hover:-translate-y-0.5'
@@ -68,15 +130,15 @@ export default function Home() {
               ))}
             </div>
             
-            <div className="flex gap-2 overflow-x-auto border-t border-slate-700/50 pt-4 hide-scrollbar">
+            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar w-full lg:w-auto">
               {TABS.filter(tab => !(doencaSelecionada === '' && tab.id === 'clima')).map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                  className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap shadow-sm ${
                     activeTab === tab.id
-                      ? 'bg-slate-700 text-white'
-                      : 'text-slate-400 hover:text-slate-200'
+                      ? 'bg-slate-700 text-white border border-slate-600'
+                      : 'bg-slate-800/40 text-slate-400 border border-transparent hover:text-slate-200 hover:bg-slate-800'
                   }`}
                 >
                   {tab.label}
@@ -84,14 +146,20 @@ export default function Home() {
               ))}
             </div>
           </div>
+
         </div>
       </div>
 
       <div className="w-full max-w-7xl relative z-10 space-y-8">
         {activeTab === 'geral' && (
           <>
-            <DashboardMetrics doenca={doencaSelecionada} />
-            <DashboardCharts doenca={doencaSelecionada} />
+            <DashboardMetrics doenca={doencaSelecionada} filtroAno={filtroAno} filtroSexo={filtroSexo} />
+            <DashboardCharts 
+              doenca={doencaSelecionada} 
+              filtroAno={filtroAno} 
+              filtroSexo={filtroSexo} 
+              setFiltroSexo={setFiltroSexo} 
+            />
           </>
         )}
         
