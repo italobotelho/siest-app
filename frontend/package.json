@@ -17,6 +17,7 @@
     "@nivo/treemap": "^0.99.0",
     "@types/leaflet.heat": "^0.2.5",
     "axios": "^1.16.1",
+    "axios-cache-interceptor": "^1.12.0",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
     "lucide-react": "^1.16.0",

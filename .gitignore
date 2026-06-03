@@ -14,3 +14,9 @@
 
 __pycache__/
 *.pyc
+# Ambientes Virtuais e Node
+venv/
+.venv/
+node_modules/
+.next/
+.DS_Store
