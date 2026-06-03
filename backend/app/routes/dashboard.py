@@ -184,15 +184,19 @@ async def get_hospitais(doenca: str = None):
     return dados
 
 @router.get("/mapas/casos")
-async def get_mapa_casos(doenca: str = None, ano: int = None, sexo: str = None):
+async def get_mapa_casos(doenca: str = None, ano: int = None, sexo: str = None, evolucao: str = None, hospitalizado: str = None):
     filtro = {"doenca": {"$regex": f"^{doenca}$", "$options": "i"}} if doenca else {}
     
-    if ano or sexo:
+    if ano or sexo or evolucao or hospitalizado:
         filtro_raw = {}
         if doenca:
             filtro_raw["NOME_DOENCA"] = {"$regex": f"^{doenca}$", "$options": "i"}
         if sexo:
             filtro_raw["CS_SEXO"] = sexo
+        if evolucao:
+            filtro_raw["EVOLUCAO"] = evolucao
+        if hospitalizado:
+            filtro_raw["HOSPITALIZ"] = hospitalizado
         if ano:
             from datetime import datetime
             inicio = datetime(ano, 1, 1)

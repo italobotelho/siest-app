@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, GeoJSON, LayersControl, LayerGroup, CircleMarker, Tooltip } from 'react-leaflet';
 import api from '@/app/services/api';
-import HeatmapLayer from './HeatmapLayer';
 
 // Coordenadas centrais de Campinas
 const CENTRO_CAMPINAS: [number, number] = [-22.9056, -47.0608];
@@ -11,15 +10,18 @@ const CENTRO_CAMPINAS: [number, number] = [-22.9056, -47.0608];
 export default function MapComponent({ 
   doenca,
   filtroAno = null,
-  filtroSexo = null
+  filtroSexo = null,
+  filtroEvolucao = null,
+  filtroHospitalizado = null
 }: { 
   doenca?: string;
   filtroAno?: number | null;
   filtroSexo?: string | null;
+  filtroEvolucao?: string | null;
+  filtroHospitalizado?: string | null;
 }) {
   const [riscoData, setRiscoData] = useState<any>(null);
   const [vulnData, setVulnData] = useState<any>(null);
-  const [casosData, setCasosData] = useState<[number, number, number][]>([]);
   const [hospitaisData, setHospitaisData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -29,27 +31,21 @@ export default function MapComponent({
   }, []);
 
   useEffect(() => {
-    // Busca dados dos hospitais quando a doença muda
-    api.get('/dashboard/mapas/casos', { params: { doenca, ano: filtroAno, sexo: filtroSexo } })
+    // Busca dados dos hospitais quando a doença ou filtros locais mudam
+    api.get('/dashboard/mapas/casos', { 
+      params: { 
+        doenca, 
+        ano: filtroAno, 
+        sexo: filtroSexo,
+        evolucao: filtroEvolucao,
+        hospitalizado: filtroHospitalizado
+      } 
+    })
       .then(res => {
-        const dados = res.data;
-        setHospitaisData(dados);
-        
-        // Gerar dados do heatmap reais baseados na intensidade de casos
-        if (dados.length > 0) {
-          const maxCasos = Math.max(...dados.map((h: any) => h.total_casos || 0));
-          const heatmapPoints: [number, number, number][] = dados.map((h: any) => [
-            h.latitude,
-            h.longitude,
-            maxCasos > 0 ? (h.total_casos || 0) / maxCasos : 0 // Intensidade normalizada (0.0 a 1.0)
-          ]);
-          setCasosData(heatmapPoints);
-        } else {
-          setCasosData([]);
-        }
+        setHospitaisData(res.data);
       })
       .catch(err => console.error("Erro ao buscar dados dos hospitais:", err));
-  }, [doenca, filtroAno, filtroSexo]);
+  }, [doenca, filtroAno, filtroSexo, filtroEvolucao, filtroHospitalizado]);
 
   // Estilos das nossas camadas geográficas
   // Risco de inundação (Água) -> Azul/Ciano
@@ -81,15 +77,6 @@ export default function MapComponent({
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
           />
         </LayersControl.BaseLayer>
-
-        {/* Camada de Heatmap: Casos */}
-        {casosData.length > 0 && (
-          <LayersControl.Overlay checked name="Densidade de Casos (Heatmap)">
-            <LayerGroup>
-              <HeatmapLayer points={casosData} />
-            </LayerGroup>
-          </LayersControl.Overlay>
-        )}
 
         {/* Camada de Polígonos: Risco de Inundação */}
         {riscoData && (
