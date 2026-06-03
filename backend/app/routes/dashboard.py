@@ -320,4 +320,68 @@ async def get_desfechos_sankey(doenca: str = None, ano: int = None, sexo: str = 
             "total": r["total"]
         }
         for r in resultados
+    ]
+
+@router.get("/tempo-resposta")
+async def get_tempo_resposta(doenca: str = None, ano: int = None, sexo: str = None):
+    filtro = {
+        "DT_NOTIFIC": {"$type": "date"},
+        "DT_SIN_PRI": {"$type": "date"}
+    }
+    if doenca:
+        filtro["NOME_DOENCA"] = {"$regex": f"^{doenca}$", "$options": "i"}
+    if ano:
+        from datetime import datetime
+        inicio = datetime(ano, 1, 1)
+        fim = datetime(ano, 12, 31, 23, 59, 59)
+        filtro["DT_NOTIFIC"]["$gte"] = inicio
+        filtro["DT_NOTIFIC"]["$lte"] = fim
+    if sexo:
+        filtro["CS_SEXO"] = sexo
+
+    pipeline = [
+        {"$match": filtro},
+        {"$project": {
+            "CRITERIO": 1,
+            "dias_atraso": {
+                "$dateDiff": {
+                    "startDate": "$DT_SIN_PRI",
+                    "endDate": "$DT_NOTIFIC",
+                    "unit": "day"
+                }
+            }
+        }},
+        {"$match": {"dias_atraso": {"$gte": 0}}},
+        {"$project": {
+            "criterio": "$CRITERIO",
+            "bucket": {
+                "$switch": {
+                    "branches": [
+                        {"case": {"$lte": ["$dias_atraso", 2]}, "then": "0-2 dias (Rápido)"},
+                        {"case": {"$lte": ["$dias_atraso", 7]}, "then": "3-7 dias (Alerta)"},
+                        {"case": {"$lte": ["$dias_atraso", 14]}, "then": "8-14 dias (Atraso)"}
+                    ],
+                    "default": "> 14 dias (Crítico)"
+                }
+            }
+        }},
+        {"$group": {
+            "_id": {
+                "criterio": "$criterio",
+                "bucket": "$bucket"
+            },
+            "total": {"$sum": 1}
+        }}
+    ]
+
+    cursor = await db.casos_geolocalizados.aggregate(pipeline)
+    resultados = await cursor.to_list(length=None)
+
+    return [
+        {
+            "criterio": r["_id"].get("criterio"),
+            "bucket": r["_id"].get("bucket"),
+            "total": r["total"]
+        }
+        for r in resultados
     ]
