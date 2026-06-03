@@ -284,3 +284,40 @@ async def get_anos_disponiveis():
         return sorted([a for a in anos if a is not None], reverse=True)
     except Exception:
         return []
+
+@router.get("/desfechos")
+async def get_desfechos_sankey(doenca: str = None, ano: int = None, sexo: str = None):
+    filtro = {}
+    if doenca:
+        filtro["NOME_DOENCA"] = {"$regex": f"^{doenca}$", "$options": "i"}
+    if ano:
+        from datetime import datetime
+        inicio = datetime(ano, 1, 1)
+        fim = datetime(ano, 12, 31, 23, 59, 59)
+        filtro["DT_NOTIFIC"] = {"$gte": inicio, "$lte": fim}
+    if sexo:
+        filtro["CS_SEXO"] = sexo
+        
+    pipeline = [
+        {"$match": filtro},
+        {"$group": {
+            "_id": {
+                "classificacao": "$CLASSI_FIN",
+                "hospitalizacao": "$HOSPITALIZ",
+                "evolucao": "$EVOLUCAO"
+            },
+            "total": {"$sum": 1}
+        }}
+    ]
+    cursor = await db.casos_geolocalizados.aggregate(pipeline)
+    resultados = await cursor.to_list(length=None)
+    
+    return [
+        {
+            "classificacao": r["_id"].get("classificacao"),
+            "hospitalizacao": r["_id"].get("hospitalizacao"),
+            "evolucao": r["_id"].get("evolucao"),
+            "total": r["total"]
+        }
+        for r in resultados
+    ]

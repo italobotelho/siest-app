@@ -8,6 +8,7 @@ import DashboardMap from '../components/DashboardMap';
 import TimeLagChart from '../components/TimeLagChart';
 import CorrelationScatter from '../components/CorrelationScatter';
 import DemographicSunburst from '../components/DemographicSunburst';
+import ClinicalOutcomesSankey from '../components/ClinicalOutcomesSankey';
 
 const DOENCAS = [
   { id: '', nome: 'Geral (Todas)', colorInfo: 'from-indigo-500 to-purple-500', activeClass: 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] border-indigo-500' },
@@ -21,7 +22,8 @@ const DOENCAS = [
 const TABS = [
   { id: 'geral', label: 'Visão Geral' },
   { id: 'clima', label: 'Clima & Correlação' },
-  { id: 'geo', label: 'Geo & Demografia' }
+  { id: 'geo', label: 'Geo & Demografia' },
+  { id: 'clinico', label: 'Inteligência Clínica' }
 ];
 
 export default function Home() {
@@ -189,6 +191,12 @@ export default function Home() {
             )}
             <DashboardMap doenca={doencaSelecionada} filtroAno={filtroAno} filtroSexo={filtroSexo} />
             <DemographicSunburst doenca={doencaSelecionada} filtroAno={filtroAno} filtroSexo={filtroSexo} />
+          </>
+        )}
+
+        {activeTab === 'clinico' && (
+          <>
+            <ClinicalOutcomesSankey doenca={doencaSelecionada} filtroAno={filtroAno} filtroSexo={filtroSexo} />
           </>
         )}
       </div>
