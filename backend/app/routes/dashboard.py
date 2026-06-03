@@ -384,4 +384,72 @@ async def get_tempo_resposta(doenca: str = None, ano: int = None, sexo: str = No
             "total": r["total"]
         }
         for r in resultados
+    ]
+
+@router.get("/unidades-carga")
+async def get_unidades_carga(doenca: str = None, ano: int = None, sexo: str = None):
+    filtro = {
+        "ID_UNIDADE": {"$exists": True, "$ne": ""},
+        "NO_FANTASIA": {"$exists": True, "$ne": None, "$nin": ["", " ", "IGNORADO"]}
+    }
+    if doenca:
+        filtro["NOME_DOENCA"] = {"$regex": f"^{doenca}$", "$options": "i"}
+    if ano:
+        from datetime import datetime
+        inicio = datetime(ano, 1, 1)
+        fim = datetime(ano, 12, 31, 23, 59, 59)
+        filtro["DT_NOTIFIC"] = {"$gte": inicio, "$lte": fim}
+    if sexo:
+        filtro["CS_SEXO"] = sexo
+
+    pipeline = [
+        {"$match": filtro},
+        {"$group": {
+            "_id": {
+                "id_unidade": "$ID_UNIDADE",
+                "no_fantasia": "$NO_FANTASIA"
+            },
+            "total_casos": {"$sum": 1},
+            "internacoes": {
+                "$sum": {
+                    "$cond": [{"$eq": [{"$toString": "$HOSPITALIZ"}, "1"]}, 1, 0]
+                }
+            },
+            "obitos": {
+                "$sum": {
+                    "$cond": [{"$in": [{"$toString": "$EVOLUCAO"}, ["2", "3"]]}, 1, 0]
+                }
+            }
+        }},
+        {"$project": {
+            "id_unidade": "$_id.id_unidade",
+            "no_fantasia": "$_id.no_fantasia",
+            "total_casos": 1,
+            "internacoes": 1,
+            "obitos": 1,
+            "severidade": {
+                "$cond": [
+                    {"$eq": ["$total_casos", 0]},
+                    0,
+                    {"$divide": [{"$add": ["$internacoes", "$obitos"]}, "$total_casos"]}
+                ]
+            }
+        }},
+        {"$sort": {"total_casos": -1}},
+        {"$limit": 15}
+    ]
+
+    cursor = await db.casos_geolocalizados.aggregate(pipeline)
+    resultados = await cursor.to_list(length=None)
+
+    # Retornamos uma lista plana para o Bar Chart
+    return [
+        {
+            "id": r["no_fantasia"], # Nivo bar usa 'id' para o eixo
+            "casos": r["total_casos"],
+            "internacoes": r["internacoes"],
+            "obitos": r["obitos"],
+            "severidade": r["severidade"]
+        }
+        for r in resultados
     ]

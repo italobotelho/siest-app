@@ -14,6 +14,7 @@
     "@nivo/pie": "^0.99.0",
     "@nivo/sankey": "^0.99.0",
     "@nivo/sunburst": "^0.99.0",
+    "@nivo/treemap": "^0.99.0",
     "@types/leaflet.heat": "^0.2.5",
     "axios": "^1.16.1",
     "leaflet": "^1.9.4",
