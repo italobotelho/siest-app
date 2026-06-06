@@ -210,7 +210,7 @@ export default function ClinicalOutcomesSankey({
               },
               labels: { text: { fontSize: 13, fontWeight: 700, fill: '#fff', textShadow: '0px 2px 4px rgba(0,0,0,0.8)' } }
             }}
-            valueFormat=" >-.0f"
+            valueFormat={(value) => Number(value).toLocaleString('pt-BR')}
             // Customizamos a label para remover o prefixo C_, H_, E_
             label={(node) => node.id.replace(/^[CHE]_/, '')}
           />
