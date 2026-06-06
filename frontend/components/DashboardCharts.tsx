@@ -182,6 +182,87 @@ export default function DashboardCharts({
         </div>
       </div>
 
+      {filtroSexo && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className={cardClass}>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-50"></div>
+            
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+              <h3 className="text-xl font-bold text-white tracking-tight">Casos por Idade ({filtroSexo})</h3>
+              <div className="relative">
+                <input 
+                  type="text" 
+                  placeholder="Ex: 25, 30-40" 
+                  value={filtroIdades}
+                  onChange={(e) => setFiltroIdades(e.target.value)}
+                  className="bg-slate-800 border border-slate-700 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full p-2.5 shadow-inner"
+                />
+                <span className="absolute right-3 top-2.5 text-slate-500 text-xs pointer-events-none">Filtro avançado</span>
+              </div>
+            </div>
+
+            <div className="h-[320px] w-full flex-grow">
+              {dadosIdadeParaExibir && dadosIdadeParaExibir.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dadosIdadeParaExibir} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                    <defs>
+                      <linearGradient id="colorBar" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor="#f59e0b" />
+                        <stop offset="100%" stopColor="#d97706" />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={true} vertical={false} />
+                    <XAxis type="number" stroke="#94a3b8" tick={{fontSize: 12, fill: '#94a3b8'}} axisLine={false} tickLine={false} />
+                    <YAxis dataKey="faixa_etaria" type="category" stroke="#94a3b8" tick={{fontSize: 12, fill: '#94a3b8'}} axisLine={false} tickLine={false} />
+                    <Tooltip contentStyle={tooltipStyle} cursor={{fill: 'rgba(255,255,255,0.05)'}} />
+                    <Bar dataKey="total_casos" name="Casos" fill="url(#colorBar)" radius={[0, 6, 6, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-500 text-sm italic">
+                  Nenhum caso encontrado para as idades: {filtroIdades}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className={cardClass}>
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
+            <h3 className="text-xl font-bold text-white mb-6 tracking-tight">Distribuição por Sexo (Ativo: {filtroSexo})</h3>
+            <div className="h-[320px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                  <Pie 
+                    data={dadosDemograficos?.sexo} 
+                    cx="50%" 
+                    cy="50%" 
+                    innerRadius={70} 
+                    outerRadius={100} 
+                    paddingAngle={8} 
+                    dataKey="total_casos" 
+                    nameKey="sexo_nome" 
+                    label={({ percent }) => `${((percent || 0) * 100).toFixed(2)}%`} 
+                    stroke="none"
+                  >
+                    {dadosDemograficos?.sexo?.map((entry: any, index: number) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={entry.fill} 
+                        style={{ 
+                          filter: `drop-shadow(0px 0px 8px ${entry.fill}60)`,
+                          transition: 'all 0.3s ease'
+                        }} 
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
