@@ -83,7 +83,7 @@ export default function SystemOverloadGraph({
           position: 'inside',
           color: '#ffffff',
           fontWeight: 'bold',
-          formatter: `{b}\n({c})`
+          formatter: (params: any) => `${params.data.name}\n(${Number(params.data.value).toLocaleString('pt-BR')})`
         },
         value: n.val,
         category: 0
@@ -144,10 +144,10 @@ export default function SystemOverloadGraph({
           if (params.dataType === 'edge') {
             return `<div style="font-weight:bold;margin-bottom:4px;">Fluxo de Pacientes</div>
                     ${params.data.source} ➔ ${params.data.target}<br/>
-                    <span style="color:#f43f5e;font-weight:bold;">${params.data.value} casos</span>`;
+                    <span style="color:#f43f5e;font-weight:bold;">${Number(params.data.value).toLocaleString('pt-BR')} casos</span>`;
           }
           return `<div style="font-weight:bold;margin-bottom:4px;">${params.data.name}</div>
-                  Total Envolvido: <span style="color:#f43f5e;font-weight:bold;">${params.data.value} casos</span>`;
+                  Total Envolvido: <span style="color:#f43f5e;font-weight:bold;">${Number(params.data.value).toLocaleString('pt-BR')} casos</span>`;
         }
       },
       series: [
