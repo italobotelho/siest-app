@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, LayersControl, LayerGroup, CircleMarker, Tooltip } from 'react-leaflet';
+import { useEffect, useState, useMemo } from 'react';
+import { MapContainer, TileLayer, GeoJSON, LayersControl, LayerGroup, CircleMarker, Tooltip, Polyline } from 'react-leaflet';
 import api from '@/app/services/api';
 
 // Coordenadas centrais de Campinas
@@ -12,17 +12,20 @@ export default function MapComponent({
   filtroAno = null,
   filtroSexo = null,
   filtroEvolucao = null,
-  filtroHospitalizado = null
+  filtroHospitalizado = null,
+  modoGrafo = 'nenhum'
 }: { 
   doenca?: string;
   filtroAno?: number | null;
   filtroSexo?: string | null;
   filtroEvolucao?: string | null;
   filtroHospitalizado?: string | null;
+  modoGrafo?: 'nenhum' | 'doenca' | 'faixa_etaria';
 }) {
   const [riscoData, setRiscoData] = useState<any>(null);
   const [vulnData, setVulnData] = useState<any>(null);
   const [hospitaisData, setHospitaisData] = useState<any[]>([]);
+  const [grafoData, setGrafoData] = useState<{nodes: any[], links: any[]}>({ nodes: [], links: [] });
 
   useEffect(() => {
     // Busca os polígonos que curámos no MongoDB (apenas na montagem)
@@ -47,7 +50,7 @@ export default function MapComponent({
       .catch(err => console.error("Erro ao buscar dados dos hospitais:", err));
   }, [doenca, filtroAno, filtroSexo, filtroEvolucao, filtroHospitalizado]);
 
-  // Estilos das nossas camadas geográficas
+  // As camadas geográficas
   // Risco de inundação (Água) -> Azul/Ciano
   const estiloRisco = { color: '#0ea5e9', weight: 1.5, fillOpacity: 0.15, dashArray: '4' }; 
   // Vulnerabilidade -> Roxo
@@ -56,13 +59,12 @@ export default function MapComponent({
   return (
     <MapContainer 
       center={CENTRO_CAMPINAS} 
-      zoom={12} 
+      zoom={11} // Zoom ligeiramente menor para vermos os nós flutuantes
       style={{ height: '100%', width: '100%', borderRadius: '0.5rem' }}
     >
-      {/* Controlo de Camadas (aquela caixinha no canto superior direito) */}
+      {/* Controlo de Camadas */}
       <LayersControl position="topright">
         
-        {/* Camada Base 1: O Mapa Escuro (combina com o nosso tema!) */}
         <LayersControl.BaseLayer checked name="Mapa Escuro">
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
@@ -70,7 +72,6 @@ export default function MapComponent({
           />
         </LayersControl.BaseLayer>
 
-        {/* Camada Base 2: O Mapa Claro Padrão */}
         <LayersControl.BaseLayer name="Mapa Claro">
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -85,7 +86,6 @@ export default function MapComponent({
               data={riscoData} 
               style={estiloRisco} 
               onEachFeature={(feature, layer) => {
-                // Adiciona um balão ao clicar no polígono
                 if (feature.properties && feature.properties.CLASSE) {
                   layer.bindPopup(`<b>Nível de Risco:</b> ${feature.properties.CLASSE}`);
                 }
@@ -109,12 +109,11 @@ export default function MapComponent({
           </LayersControl.Overlay>
         )}
 
-        {/* Camada de Hospitais/Unidades de Saúde */}
+        {/* Camada Normal de Hospitais */}
         {hospitaisData.length > 0 && (
-          <LayersControl.Overlay checked name="Unidades de Saúde (Hospitais)">
+          <LayersControl.Overlay checked name="Unidades de Saúde">
             <LayerGroup>
               {hospitaisData.map((h, idx) => {
-                // Dimensão proporcional aos casos (Reduzido max para 25 para evitar poluição visual)
                 const radius = Math.max(4, Math.min(25, Math.sqrt(h.total_casos || 0) * 1.5));
                 return (
                   <CircleMarker
@@ -122,10 +121,10 @@ export default function MapComponent({
                     center={[h.latitude, h.longitude]}
                     radius={radius}
                     pathOptions={{
-                      color: '#ffffff', // Borda Branca para destacar
-                      fillColor: '#f43f5e', // Rosa/Vermelho
-                      fillOpacity: 0.5,     // Mais transparente para ver as sobreposições
-                      weight: radius > 10 ? 1 : 0.5 // Borda mais fina em bolhas pequenas
+                      color: '#ffffff',
+                      fillColor: '#f43f5e',
+                      fillOpacity: 0.5,
+                      weight: radius > 10 ? 1 : 0.5
                     }}
                   >
                     <Tooltip direction="top" offset={[0, -radius]} opacity={1}>

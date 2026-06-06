@@ -241,22 +241,31 @@ async def get_mapa_casos(doenca: str = None, ano: int = None, sexo: str = None, 
             
         pipeline = [
             {"$match": filtro_raw},
-            {"$match": {"hospital": {"$exists": True, "$ne": None, "$ne": ""}}},
+            {"$match": {"NO_FANTASIA": {"$exists": True, "$ne": None, "$nin": ["", " ", "IGNORADO"]}}},
             {"$group": {
-                "_id": "$hospital",
-                "total_casos": {"$sum": "$total_casos"},
-                "latitude": {"$first": "$latitude"},
-                "longitude": {"$first": "$longitude"}
+                "_id": "$NO_FANTASIA",
+                "total_casos": {"$sum": 1}
             }},
+            {"$lookup": {
+                "from": "agg_mapa_casos",
+                "localField": "_id",
+                "foreignField": "hospital",
+                "as": "hospital_info"
+            }},
+            {"$addFields": {
+                "hospital_info": {"$arrayElemAt": ["$hospital_info", 0]}
+            }},
+            {"$match": {"hospital_info": {"$ne": None}}},
             {"$project": {
                 "_id": 0,
                 "hospital": "$_id",
-                "latitude": 1,
-                "longitude": 1,
+                "latitude": "$hospital_info.latitude",
+                "longitude": "$hospital_info.longitude",
                 "total_casos": 1
             }}
         ]
-        cursor = await db.agg_vulnerabilidade_casos.aggregate(pipeline)
+        # Important: use casos_geolocalizados because it has EVOLUCAO, HOSPITALIZ, etc.
+        cursor = await db.casos_geolocalizados.aggregate(pipeline)
         return await cursor.to_list(length=None)
 
     return await db.agg_mapa_casos.find(filtro, {"_id": 0}).to_list(length=None)
