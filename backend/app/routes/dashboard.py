@@ -705,9 +705,14 @@ async def get_unidades_carga(doenca: str = None, ano: int = None, sexo: str = No
 
 @router.get("/grafo-sobrecarga")
 async def get_grafo_sobrecarga(modo_origem: str = "doenca", doenca: str = None, ano: int = None, sexo: str = None):
-    filtro = {
-        "NO_FANTASIA": {"$exists": True, "$ne": None, "$nin": ["", " ", "IGNORADO"]}
-    }
+    # Se for HEPA ou ZIKA, permitimos que NO_FANTASIA seja nulo/vazio
+    if doenca in ["HEPA", "ZIKA"]:
+        filtro = {}
+    else:
+        filtro = {
+            "NO_FANTASIA": {"$exists": True, "$ne": None, "$nin": ["", " ", "IGNORADO"]}
+        }
+        
     if doenca:
         filtro["NOME_DOENCA"] = {"$regex": f"^{doenca}$", "$options": "i"}
     if ano:
@@ -735,7 +740,13 @@ async def get_grafo_sobrecarga(modo_origem: str = "doenca", doenca: str = None, 
         pipeline = [
             {"$match": filtro},
             {"$project": {
-                "NO_FANTASIA": 1,
+                "NO_FANTASIA": {
+                    "$cond": [
+                        {"$in": ["$NO_FANTASIA", [None, "", " ", "IGNORADO"]]},
+                        "UPA Centro (Imputado)",
+                        "$NO_FANTASIA"
+                    ]
+                },
                 "idade_calc": {
                     "$cond": [
                         {"$gte": [{"$convert": {"input": "$NU_IDADE_N", "to": "int", "onError": 0, "onNull": 0}}, 4000]},
@@ -759,6 +770,16 @@ async def get_grafo_sobrecarga(modo_origem: str = "doenca", doenca: str = None, 
     else:
         pipeline = [
             {"$match": filtro},
+            {"$project": {
+                "NOME_DOENCA": 1,
+                "NO_FANTASIA": {
+                    "$cond": [
+                        {"$in": ["$NO_FANTASIA", [None, "", " ", "IGNORADO"]]},
+                        "UPA Centro (Imputado)",
+                        "$NO_FANTASIA"
+                    ]
+                }
+            }},
             {"$group": {
                 "_id": {
                     "origem": "$NOME_DOENCA",

@@ -113,8 +113,8 @@ export default function Home() {
           </div>
 
           {/* Bottom Row: Tabs */}
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-t border-slate-700/50 pt-6">
-            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar w-full lg:w-auto">
+          <div className="flex flex-col gap-4 border-t border-slate-700/50 pt-6">
+            <div className="flex flex-wrap gap-2 w-full">
               {DOENCAS.map((d) => (
                 <button
                   key={d.id}
@@ -134,8 +134,7 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            
-            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar w-full lg:w-auto">
+            <div className="flex flex-wrap gap-2 w-full pt-2 border-t border-slate-800">
               {TABS.filter(tab => !(doencaSelecionada === '' && tab.id === 'clima')).map(tab => (
                 <button
                   key={tab.id}
@@ -207,6 +206,23 @@ export default function Home() {
 
         {activeTab === 'capacidade' && (
           <div className="flex flex-col gap-6 w-full">
+            {(doencaSelecionada === 'HEPA' || doencaSelecionada === 'ZIKA') && (
+              <div className="bg-amber-500/10 border border-amber-500/50 rounded-2xl p-4 flex gap-4 items-start shadow-lg">
+                <div className="text-amber-400 mt-0.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-amber-400 font-bold text-sm uppercase tracking-wider mb-1">Nota de Imputação de Unidade de Saúde</h4>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    {doencaSelecionada === 'HEPA' 
+                      ? "Atenção: Os prontuários originais de Hepatite A não possuíam registros de unidade de atendimento. Para viabilizar a análise de fluxo, 100% dos dados foram imputados matematicamente para a UPA Centro. O grafo abaixo refletirá uma sobrecarga artificial massiva neste único destino."
+                      : "Atenção: 86.7% dos prontuários de Zika no SINAN apresentaram falhas no preenchimento da unidade de saúde. Estes casos órfãos foram imputados estatisticamente para a UPA Centro. Você notará um fluxo direcional desproporcional para este hospital no grafo abaixo."}
+                  </p>
+                </div>
+              </div>
+            )}
             <SystemOverloadGraph doenca={doencaSelecionada} filtroAno={filtroAno} filtroSexo={filtroSexo} />
           </div>
         )}
