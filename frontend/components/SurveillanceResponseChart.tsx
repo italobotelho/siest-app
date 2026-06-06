@@ -119,7 +119,21 @@ export default function SurveillanceResponseChart({
 
       <div className="flex-1 w-full relative z-10 mt-4 min-h-[350px]">
         {chartData.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-slate-500">Sem dados para exibir.</div>
+          <div className="flex flex-col items-center justify-center h-full text-slate-500 gap-3 px-8 text-center">
+            {doenca === 'HEPA' ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-amber-500/50 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-slate-400 font-medium">Cálculo de Atraso Indisponível</p>
+                <p className="text-sm text-slate-500 max-w-md">
+                  Os prontuários do SINAN para <strong>Hepatite A</strong> em nossa base não possuem o campo "Data dos Primeiros Sintomas" preenchido sistematicamente, o que torna impossível calcular matematicamente o tempo de resposta da vigilância para esta doença.
+                </p>
+              </>
+            ) : (
+              <p>Sem dados cronológicos suficientes para exibir a resposta da vigilância.</p>
+            )}
+          </div>
         ) : (
           <ResponsiveBar
             data={chartData}

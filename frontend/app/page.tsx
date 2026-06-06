@@ -112,6 +112,46 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Specific Data Warnings per Disease */}
+          {(() => {
+            if (!filtroAno || filtroAno < 2024 || !doencaSelecionada) return null;
+            
+            let mensagem = "";
+            let titulo = "Status dos Dados";
+
+            if (doencaSelecionada === 'DENG') {
+              titulo = "Processamento Laboratorial";
+              mensagem = `Os registros de Dengue para ${filtroAno} são inseridos rapidamente, porém dependem de encerramento laboratorial (sorologia). Os números atuais representam casos notificados que ainda podem sofrer descartes nas próximas semanas.`;
+            } else if (doencaSelecionada === 'ZIKA' || doencaSelecionada === 'CHIK') {
+              titulo = "Atraso de Consolidação";
+              const nome = doencaSelecionada === 'ZIKA' ? 'Zika' : 'Chikungunya';
+              mensagem = `Os dados de ${nome} sofrem um atraso (Data-Lag) natural no SINAN. Para o ano de ${filtroAno}, a maioria dos municípios de investigação silenciosa ainda não enviou os fechamentos, resultando em uma forte subnotificação visual.`;
+            } else if (doencaSelecionada === 'LEPT') {
+              titulo = "Inquérito Ambiental";
+              mensagem = `A confirmação de Leptospirose em ${filtroAno} depende de investigações epidemiológicas de campo demoradas. A ausência de casos reflete o período em que os municípios ainda estão realizando o bloqueio e fechamento das fichas.`;
+            } else if (doencaSelecionada === 'HEPA') {
+              titulo = "Base Congelada";
+              mensagem = `Os ciclos de coleta para Hepatite A ocorrem em blocos. O banco de dados atualmente integrado não possui as consolidações nacionais finalizadas para o ano de ${filtroAno}, explicando o sumiço dos casos na interface.`;
+            }
+
+            if (!mensagem) return null;
+
+            return (
+              <div className="mt-4 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex gap-3 items-start shadow-sm">
+                <div className="text-amber-400 mt-0.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-amber-200/90 text-xs font-medium leading-relaxed">
+                    <strong>{titulo} ({filtroAno}):</strong> {mensagem}
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Bottom Row: Tabs */}
           <div className="flex flex-col gap-4 border-t border-slate-700/50 pt-6">
             <div className="flex flex-wrap gap-2 w-full">
