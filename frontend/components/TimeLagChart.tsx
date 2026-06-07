@@ -150,7 +150,7 @@ export default function TimeLagChart({
               <YAxis yAxisId="temp" type="number" domain={[0, 45]} hide={true} />
               <YAxis yAxisId="humidity" type="number" domain={[0, 100]} hide={true} />
 
-              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.05)' }} formatter={(value: number) => value.toLocaleString('pt-BR')} />
+              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.05)' }} formatter={(value: any) => value?.toLocaleString('pt-BR')} />
               <Legend 
                 verticalAlign="top" 
                 height={36} 

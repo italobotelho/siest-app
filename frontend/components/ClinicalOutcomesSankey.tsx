@@ -189,7 +189,7 @@ export default function ClinicalOutcomesSankey({
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             align="justify"
             sort="input"
-            colors={(node) => node.color}
+            colors={(node: any) => node.color}
             nodeOpacity={1}
             nodeHoverOthersOpacity={0.1}
             nodeThickness={14}

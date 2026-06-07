@@ -133,7 +133,7 @@ export default function HealthcareUnitsChart({
             gridXValues={5}
             labelSkipWidth={40}
             labelSkipHeight={12}
-            label={(d) => d.value.toLocaleString('pt-BR')}
+            label={(d) => d.value?.toLocaleString('pt-BR') || ''}
             labelTextColor="#ffffff"
             theme={{
               labels: { 

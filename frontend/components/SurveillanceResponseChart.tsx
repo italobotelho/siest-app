@@ -181,7 +181,7 @@ export default function SurveillanceResponseChart({
               format: (value) => isNormalized ? `${value}%` : Number(value).toLocaleString('pt-BR')
             }}
             enableLabel={true}
-            label={(d) => d.value > 0 ? (isNormalized ? `${d.value}%` : d.value.toLocaleString('pt-BR')) : ''}
+            label={(d) => d.value ? (d.value > 0 ? (isNormalized ? `${d.value}%` : d.value.toLocaleString('pt-BR')) : '') : ''}
             labelSkipWidth={20}
             labelSkipHeight={24}
             labelTextColor="#ffffff"

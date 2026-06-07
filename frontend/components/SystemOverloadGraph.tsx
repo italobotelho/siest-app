@@ -57,7 +57,7 @@ export default function SystemOverloadGraph({
     const minVal = Math.min(...allVals, 0);
 
     // Posicionamento Radial (Origens no Centro, Destinos em um Círculo Externo)
-    const eNodes = [];
+    const eNodes: any[] = [];
     
     // Distribuir origens no Centro
     // Se for apenas 1 origem (muito comum em Doença), fica exatamente no (0,0)

@@ -156,7 +156,7 @@ export default function DashboardCharts({
               <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} opacity={0.4} />
               <XAxis dataKey="data_formatada" stroke="#94a3b8" tick={{fontSize: 12, fill: '#94a3b8'}} axisLine={false} tickLine={false} minTickGap={30} />
               <YAxis stroke="#94a3b8" tick={{fontSize: 12, fill: '#94a3b8'}} axisLine={false} tickLine={false} tickFormatter={(value) => value.toLocaleString('pt-BR')} />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2 }} formatter={(value: number) => value.toLocaleString('pt-BR')} />
+              <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2 }} formatter={(value: any) => value.toLocaleString('pt-BR')} />
               <Legend verticalAlign="top" height={36} />
               <Area 
                 type="monotone" 
@@ -214,7 +214,7 @@ export default function DashboardCharts({
                     <CartesianGrid strokeDasharray="3 3" stroke="#334155" horizontal={true} vertical={false} />
                     <XAxis type="number" stroke="#94a3b8" tick={{fontSize: 12, fill: '#94a3b8'}} axisLine={false} tickLine={false} tickFormatter={(value) => value.toLocaleString('pt-BR')} />
                     <YAxis dataKey="faixa_etaria" type="category" stroke="#94a3b8" tick={{fontSize: 12, fill: '#94a3b8'}} axisLine={false} tickLine={false} />
-                    <Tooltip contentStyle={tooltipStyle} cursor={{fill: 'rgba(255,255,255,0.05)'}} formatter={(value: number) => value.toLocaleString('pt-BR')} />
+                    <Tooltip contentStyle={tooltipStyle} cursor={{fill: 'rgba(255,255,255,0.05)'}} formatter={(value: any) => value?.toLocaleString('pt-BR')} />
                     <Bar dataKey="total_casos" name="Casos" fill="url(#colorBar)" radius={[0, 6, 6, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -255,7 +255,7 @@ export default function DashboardCharts({
                       />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={tooltipStyle} formatter={(value: number) => value.toLocaleString('pt-BR')} />
+                  <Tooltip contentStyle={tooltipStyle} formatter={(value: any) => value?.toLocaleString('pt-BR')} />
                   <Legend wrapperStyle={{ paddingTop: '20px' }} />
                 </PieChart>
               </ResponsiveContainer>
