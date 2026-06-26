@@ -59,15 +59,11 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-slate-500 text-xs text-center md:text-left">
+        <div className="pt-8 border-t border-slate-800 flex flex-col items-center justify-center text-center">
+          <p className="text-slate-500 text-xs">
             © {currentYear} SIEST. Projeto Integrador (PI) - Ciência de Dados e Inteligência Artificial <br className="md:hidden" />
             <span className="hidden md:inline"> | </span>PUC-Campinas. Desenvolvido por Ítalo Fraga Botelho.
           </p>
-          <div className="flex gap-6 text-xs text-slate-500">
-            <a href="#" className="hover:text-white transition-colors">Termos de Uso</a>
-            <a href="#" className="hover:text-white transition-colors">Política de Privacidade</a>
-          </div>
         </div>
       </div>
     </footer>

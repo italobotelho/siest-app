@@ -5,21 +5,21 @@ export default function LandingPage() {
   return (
     <main className="flex flex-col min-h-[calc(100vh-64px)]">
       {/* Hero Section */}
-      <section className="relative flex-1 flex items-center justify-center overflow-hidden py-20 lg:py-32">
+      <section className="relative w-full min-h-[calc(100vh-64px)] flex items-center justify-center overflow-hidden py-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/40 via-slate-950 to-black z-0"></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-indigo-600/20 blur-[120px] rounded-full pointer-events-none z-0"></div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-semibold mb-8 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs md:text-sm font-semibold mb-6 backdrop-blur-sm">
             <Activity className="h-4 w-4" />
             <span>Monitoramento Epidemiológico • Município de Campinas (SP)</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-6 max-w-4xl leading-tight">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-4 max-w-4xl leading-tight">
             Inteligência <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Epidemiológica</span> de Campinas
           </h1>
           
-          <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl leading-relaxed">
+          <p className="text-base md:text-lg text-slate-400 mb-8 max-w-2xl leading-relaxed">
             O SIEST é uma plataforma avançada para visualização e análise de surtos epidemiológicos, 
             desenvolvida especificamente para o município de <strong>Campinas - SP</strong>. A ferramenta integra dados climáticos, geoespaciais e de capacidade hospitalar local para embasar decisões de saúde pública.
           </p>
@@ -44,8 +44,8 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-slate-950 py-24 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-slate-950 relative z-10 min-h-[calc(100vh-64px)] flex flex-col justify-center py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Dimensões de Análise</h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
@@ -111,8 +111,8 @@ export default function LandingPage() {
       </section>
 
       {/* Data Sources Section */}
-      <section className="bg-slate-900 border-t border-slate-800 py-16 relative z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-slate-900 border-t border-slate-800 relative z-10 min-h-[calc(100vh-64px)] flex flex-col justify-center py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center mb-10">
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Fontes de Dados Abertos</h2>
             <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
