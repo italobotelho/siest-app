@@ -49,19 +49,20 @@ export default function Footer() {
             </h3>
             <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
               <p className="text-slate-400 text-xs leading-relaxed mb-3">
-                Os dados apresentados neste painel são extraídos de bases públicas e parceiras (SINAN, Ministério da Saúde). Eles passam por processos de imputação estatística para suprir falhas no preenchimento original (ex: localização e unidade de saúde).
+                Os dados apresentados neste painel são extraídos de bases públicas e parceiras (SINAN/DATASUS, Mosqlimate e Portal Geoambiental de Campinas). Eles passam por rigorosos processos de Engenharia de Dados (ETL) e imputação estatística para suprir falhas no preenchimento original e proteger a privacidade dos pacientes (LGPD).
               </p>
               <div className="flex items-start gap-2 text-amber-500/80 text-xs">
                 <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-                <p>O atraso (data-lag) entre a notificação clínica e o fechamento do inquérito laboratorial pode gerar subnotificação temporária para o ano corrente.</p>
+                <p>O atraso natural (data-lag) do SINAN entre a notificação clínica e o fechamento do inquérito laboratorial pode gerar subnotificação visual para o ano corrente.</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-slate-500 text-xs">
-            © {currentYear} SIEST. Projeto Integrador PUC (PI2026.1). Todos os direitos reservados.
+          <p className="text-slate-500 text-xs text-center md:text-left">
+            © {currentYear} SIEST. Projeto Integrador (PI) - Ciência de Dados e Inteligência Artificial <br className="md:hidden" />
+            <span className="hidden md:inline"> | </span>PUC-Campinas. Desenvolvido por Ítalo Fraga Botelho.
           </p>
           <div className="flex gap-6 text-xs text-slate-500">
             <a href="#" className="hover:text-white transition-colors">Termos de Uso</a>
