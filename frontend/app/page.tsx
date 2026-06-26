@@ -12,16 +12,16 @@ export default function LandingPage() {
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-sm font-semibold mb-8 backdrop-blur-sm">
             <Activity className="h-4 w-4" />
-            <span>Monitoramento Epidemiológico em Tempo Real</span>
+            <span>Monitoramento Epidemiológico • Município de Campinas (SP)</span>
           </div>
           
           <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-6 max-w-4xl leading-tight">
-            Inteligência <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Epidemiológica</span> e Socio-Territorial
+            Inteligência <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Epidemiológica</span> de Campinas
           </h1>
           
           <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl leading-relaxed">
-            O SIEST é uma plataforma avançada para visualização, previsão e análise de surtos epidemiológicos, 
-            integrando dados climáticos, geoespaciais e de capacidade hospitalar para embasar decisões de saúde pública.
+            O SIEST é uma plataforma avançada para visualização e análise de surtos epidemiológicos, 
+            desenvolvida especificamente para o município de <strong>Campinas - SP</strong>. A ferramenta integra dados climáticos, geoespaciais e de capacidade hospitalar local para embasar decisões de saúde pública.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -106,6 +106,75 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Data Sources Section */}
+      <section className="bg-slate-900 border-t border-slate-800 py-16 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">Fontes de Dados Abertos</h2>
+            <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base">
+              A transparência é o pilar deste projeto. Todos os dados processados e cruzados pelo SIEST 
+              são provenientes de repositórios oficiais e públicos do governo brasileiro e municipal.
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+            <a 
+              href="https://datasus.saude.gov.br/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-start gap-4 px-6 py-5 bg-slate-950 border border-slate-800 rounded-2xl hover:border-indigo-500/50 hover:bg-slate-800/50 transition-all group max-w-sm w-full md:w-auto"
+            >
+              <div className="w-12 h-12 shrink-0 bg-indigo-500/10 rounded-full flex items-center justify-center group-hover:bg-indigo-500/20">
+                <Activity className="h-6 w-6 text-indigo-400" />
+              </div>
+              <div className="text-left flex flex-col items-start">
+                <h4 className="text-white font-bold text-base">SINAN & CNES</h4>
+                <p className="text-slate-500 text-sm mb-2">Notificações Clínicas</p>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-indigo-400 bg-indigo-500/10 px-2 py-1 rounded border border-indigo-500/20">
+                  Extração: PySUS
+                </span>
+              </div>
+            </a>
+
+            <a 
+              href="https://mosqlimate.org/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-start gap-4 px-6 py-5 bg-slate-950 border border-slate-800 rounded-2xl hover:border-teal-500/50 hover:bg-slate-800/50 transition-all group max-w-sm w-full md:w-auto"
+            >
+              <div className="w-12 h-12 shrink-0 bg-teal-500/10 rounded-full flex items-center justify-center group-hover:bg-teal-500/20">
+                <Zap className="h-6 w-6 text-teal-400" />
+              </div>
+              <div className="text-left flex flex-col items-start">
+                <h4 className="text-white font-bold text-base">Mosqlimate</h4>
+                <p className="text-slate-500 text-sm mb-2">Série Histórica Climática</p>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-teal-400 bg-teal-500/10 px-2 py-1 rounded border border-teal-500/20">
+                  Extração: Pandas
+                </span>
+              </div>
+            </a>
+
+            <a 
+              href="https://geoambiental.campinas.sp.gov.br/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-start gap-4 px-6 py-5 bg-slate-950 border border-slate-800 rounded-2xl hover:border-rose-500/50 hover:bg-slate-800/50 transition-all group max-w-sm w-full md:w-auto"
+            >
+              <div className="w-12 h-12 shrink-0 bg-rose-500/10 rounded-full flex items-center justify-center group-hover:bg-rose-500/20">
+                <Map className="h-6 w-6 text-rose-400" />
+              </div>
+              <div className="text-left flex flex-col items-start">
+                <h4 className="text-white font-bold text-base">Portal Geoambiental</h4>
+                <p className="text-slate-500 text-sm mb-2">Polígonos de Risco (Campinas)</p>
+                <span className="text-[10px] uppercase font-bold tracking-wider text-rose-400 bg-rose-500/10 px-2 py-1 rounded border border-rose-500/20">
+                  Extração: GeoPandas
+                </span>
+              </div>
+            </a>
           </div>
         </div>
       </section>
