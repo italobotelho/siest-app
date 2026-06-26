@@ -13,7 +13,7 @@ import HealthcareUnitsChart from '@/components/HealthcareUnitsChart';
 import DemographicHeatmap from '@/components/DemographicHeatmap';
 import DemographicPyramid from '@/components/DemographicPyramid';
 import SystemOverloadGraph from '@/components/SystemOverloadGraph';
-
+import LoadingOverlay from '@/components/LoadingOverlay';
 const DOENCAS = [
   { id: '', nome: 'Geral (Todas)', colorInfo: 'from-indigo-500 to-purple-500', activeClass: 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] border-indigo-500' },
   { id: 'DENG', nome: 'Dengue', colorInfo: 'from-rose-500 to-red-500', activeClass: 'bg-rose-600 text-white shadow-[0_0_15px_rgba(225,29,72,0.5)] border-rose-500' },
@@ -48,7 +48,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center p-6 md:p-12 text-slate-100 font-sans relative overflow-hidden bg-slate-950">
-      
+      <LoadingOverlay />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black z-0"></div>
       <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-r ${activeDoenca.colorInfo} opacity-[0.15] blur-[120px] rounded-full pointer-events-none transition-all duration-1000 z-0`}></div>
 

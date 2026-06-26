@@ -195,6 +195,7 @@ export default function ClinicalOutcomesSankey({
           <div className="flex items-center justify-center h-full text-slate-500">Sem dados de desfecho para exibir.</div>
         ) : (
           <ResponsiveSankey
+            animate={false}
             data={{ nodes, links }}
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
             align="justify"

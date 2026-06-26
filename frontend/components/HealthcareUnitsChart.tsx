@@ -111,6 +111,7 @@ export default function HealthcareUnitsChart({
           <div className="flex items-center justify-center h-full text-slate-500">Sem dados para exibir.</div>
         ) : (
           <ResponsiveBar
+            animate={false}
             data={dados}
             keys={['casos']}
             indexBy="id"

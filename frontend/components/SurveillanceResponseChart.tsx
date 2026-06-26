@@ -145,6 +145,7 @@ export default function SurveillanceResponseChart({
           </div>
         ) : (
           <ResponsiveBar
+            animate={false}
             data={chartData}
             keys={['Laboratorial', 'Clínico-Epidem.', 'Sem Info']}
             indexBy="bucket"

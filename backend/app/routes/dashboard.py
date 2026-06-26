@@ -240,8 +240,32 @@ async def get_mapa_casos(doenca: str = None, ano: int = None, sexo: str = None, 
             filtro_raw["DT_NOTIFIC"] = {"$gte": inicio, "$lte": fim}
             
         pipeline = [
-            {"$match": filtro_raw},
-            {"$match": {"NO_FANTASIA": {"$exists": True, "$ne": None, "$nin": ["", " ", "IGNORADO"]}}},
+            {"$match": filtro_raw}
+        ]
+        
+        if doenca in ["HEPA", "ZIKA"]:
+            pipeline.append({
+                "$project": {
+                    "NOME_DOENCA": 1,
+                    "CS_SEXO": 1,
+                    "EVOLUCAO": 1,
+                    "HOSPITALIZ": 1,
+                    "DT_NOTIFIC": 1,
+                    "NO_FANTASIA": {
+                        "$cond": [
+                            {"$in": ["$NO_FANTASIA", [None, "", " ", "IGNORADO"]]},
+                            "UPA Centro (Imputado)",
+                            "$NO_FANTASIA"
+                        ]
+                    }
+                }
+            })
+        else:
+            pipeline.append(
+                {"$match": {"NO_FANTASIA": {"$exists": True, "$ne": None, "$nin": ["", " ", "IGNORADO"]}}}
+            )
+            
+        pipeline.extend([
             {"$group": {
                 "_id": "$NO_FANTASIA",
                 "total_casos": {"$sum": 1}
@@ -263,7 +287,7 @@ async def get_mapa_casos(doenca: str = None, ano: int = None, sexo: str = None, 
                 "longitude": "$hospital_info.longitude",
                 "total_casos": 1
             }}
-        ]
+        ])
         # Important: use casos_geolocalizados because it has EVOLUCAO, HOSPITALIZ, etc.
         cursor = await db.casos_geolocalizados.aggregate(pipeline)
         return await cursor.to_list(length=None)
@@ -821,4 +845,4 @@ async def get_grafo_sobrecarga(modo_origem: str = "doenca", doenca: str = None, 
     return {
         "nodes": list(nodes_dict.values()),
         "links": links
-    }
+    }

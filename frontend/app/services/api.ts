@@ -8,10 +8,38 @@ const axiosInstance = axios.create({
   timeout: 30000, // Dá 30 segundos para a API responder antes de dar erro
 });
 
-// Envelopa o Axios com interceptor de cache (TTL de 5 minutos na memória RAM)
 const api = setupCache(axiosInstance, {
   ttl: 1000 * 60 * 5, // 5 minutos
   methods: ['get'] // Apenas cacheia requisições GET
 });
+
+let activeRequests = 0;
+
+api.interceptors.request.use((config) => {
+  activeRequests++;
+  if (activeRequests === 1 && typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('dashboard-loading-start'));
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => {
+    activeRequests--;
+    if (activeRequests <= 0 && typeof window !== 'undefined') {
+      activeRequests = 0;
+      window.dispatchEvent(new Event('dashboard-loading-stop'));
+    }
+    return response;
+  },
+  (error) => {
+    activeRequests--;
+    if (activeRequests <= 0 && typeof window !== 'undefined') {
+      activeRequests = 0;
+      window.dispatchEvent(new Event('dashboard-loading-stop'));
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

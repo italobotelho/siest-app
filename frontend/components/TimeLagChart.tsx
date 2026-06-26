@@ -130,10 +130,14 @@ export default function TimeLagChart({
 
       {loading ? (
         <div className="h-[500px] w-full animate-pulse bg-slate-800/50 rounded-xl"></div>
+      ) : dados.length === 0 ? (
+        <div className="flex items-center justify-center h-[500px] w-full text-slate-500 bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl">
+          Sem dados climáticos e epidemiológicos para o filtro selecionado.
+        </div>
       ) : (
         <div className="h-[500px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={dados} margin={{ top: 10, right: 10, bottom: 5, left: 20 }}>
+            <ComposedChart key={`${dados.length}-${lagSemanas}`} data={dados} margin={{ top: 10, right: 10, bottom: 5, left: 20 }}>
               <defs>
                 <linearGradient id="colorPrecip" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.8}/>
