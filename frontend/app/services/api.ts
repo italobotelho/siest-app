@@ -30,38 +30,43 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+const activeRequests = new Set<string>();
+
+const incrementRequests = (config: any) => {
+  const requestId = Math.random().toString(36).substring(7);
+  config.__requestId = requestId;
+  activeRequests.add(requestId);
+  if (activeRequests.size === 1 && typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('dashboard-loading-start'));
+  }
+  return config;
+};
+
+const decrementRequests = (config: any) => {
+  if (config && config.__requestId) {
+    activeRequests.delete(config.__requestId);
+  }
+  if (activeRequests.size === 0 && typeof window !== 'undefined') {
+    window.dispatchEvent(new Event('dashboard-loading-stop'));
+  }
+};
+
+axiosInstance.interceptors.request.use(incrementRequests);
+
+axiosInstance.interceptors.response.use(
+  (response) => {
+    decrementRequests(response.config);
+    return response;
+  },
+  (error) => {
+    decrementRequests(error.config);
+    return Promise.reject(error);
+  }
+);
+
 const api = setupCache(axiosInstance, {
   ttl: 1000 * 60 * 5, // 5 minutos
   methods: ['get'] // Apenas cacheia requisições GET
 });
-
-let activeRequests = 0;
-
-api.interceptors.request.use((config) => {
-  activeRequests++;
-  if (activeRequests === 1 && typeof window !== 'undefined') {
-    window.dispatchEvent(new Event('dashboard-loading-start'));
-  }
-  return config;
-});
-
-api.interceptors.response.use(
-  (response) => {
-    activeRequests--;
-    if (activeRequests <= 0 && typeof window !== 'undefined') {
-      activeRequests = 0;
-      window.dispatchEvent(new Event('dashboard-loading-stop'));
-    }
-    return response;
-  },
-  (error) => {
-    activeRequests--;
-    if (activeRequests <= 0 && typeof window !== 'undefined') {
-      activeRequests = 0;
-      window.dispatchEvent(new Event('dashboard-loading-stop'));
-    }
-    return Promise.reject(error);
-  }
-);
 
 export default api;

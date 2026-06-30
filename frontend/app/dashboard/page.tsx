@@ -1,18 +1,20 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import api from '@/app/services/api';
-import DashboardMetrics from '@/components/DashboardMetrics';
-import DashboardCharts from '@/components/DashboardCharts';
-import DashboardMap from '@/components/DashboardMap';
-import TimeLagChart from '@/components/TimeLagChart';
-import CorrelationScatter from '@/components/CorrelationScatter';
-import ClinicalOutcomesSankey from '@/components/ClinicalOutcomesSankey';
-import SurveillanceResponseChart from '@/components/SurveillanceResponseChart';
-import HealthcareUnitsChart from '@/components/HealthcareUnitsChart';
-import DemographicHeatmap from '@/components/DemographicHeatmap';
-import DemographicPyramid from '@/components/DemographicPyramid';
-import SystemOverloadGraph from '@/components/SystemOverloadGraph';
+
+const DashboardMetrics = dynamic(() => import('@/components/DashboardMetrics'), { ssr: false, loading: () => <div className="h-32 bg-slate-800/50 animate-pulse rounded-2xl w-full"></div> });
+const DashboardCharts = dynamic(() => import('@/components/DashboardCharts'), { ssr: false, loading: () => <div className="h-96 bg-slate-800/50 animate-pulse rounded-2xl w-full"></div> });
+const DashboardMap = dynamic(() => import('@/components/DashboardMap'), { ssr: false, loading: () => <div className="h-96 bg-slate-800/50 animate-pulse rounded-2xl w-full"></div> });
+const TimeLagChart = dynamic(() => import('@/components/TimeLagChart'), { ssr: false });
+const CorrelationScatter = dynamic(() => import('@/components/CorrelationScatter'), { ssr: false });
+const ClinicalOutcomesSankey = dynamic(() => import('@/components/ClinicalOutcomesSankey'), { ssr: false });
+const SurveillanceResponseChart = dynamic(() => import('@/components/SurveillanceResponseChart'), { ssr: false });
+const HealthcareUnitsChart = dynamic(() => import('@/components/HealthcareUnitsChart'), { ssr: false });
+const DemographicHeatmap = dynamic(() => import('@/components/DemographicHeatmap'), { ssr: false });
+const DemographicPyramid = dynamic(() => import('@/components/DemographicPyramid'), { ssr: false });
+const SystemOverloadGraph = dynamic(() => import('@/components/SystemOverloadGraph'), { ssr: false });
 import LoadingOverlay from '@/components/LoadingOverlay';
 const DOENCAS = [
   { id: '', nome: 'Geral (Todas)', colorInfo: 'from-indigo-500 to-purple-500', activeClass: 'bg-indigo-600 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] border-indigo-500' },
